@@ -2,7 +2,10 @@ package info.elexis.security.provisioning;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.h2.util.StringUtils;
 import org.mitre.openid.connect.model.DefaultUserInfo;
@@ -17,6 +20,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 
 public class ElexisJdbcUserDetailsManager extends JdbcUserDetailsManager implements UserInfoRepository {
@@ -50,6 +54,49 @@ public class ElexisJdbcUserDetailsManager extends JdbcUserDetailsManager impleme
 					}
 
 				});
+	}
+
+	
+	/**
+	 * we have to override this, as we already determine the ROLE_USER and ROLE_ADMIN while loading
+	 * the user list.
+	 */
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		List<UserDetails> users = loadUsersByUsername(username);
+
+		if (users.size() == 0) {
+			this.logger.debug("Query returned no results for user '" + username + "'");
+
+			throw new UsernameNotFoundException(this.messages.getMessage("JdbcDaoImpl.notFound",
+					new Object[] { username }, "Username {0} not found"));
+		}
+
+		UserDetails user = users.get(0);
+
+		Set<GrantedAuthority> dbAuthsSet = new HashSet<GrantedAuthority>();
+		dbAuthsSet.addAll(user.getAuthorities());
+
+		if (getEnableAuthorities()) {
+			dbAuthsSet.addAll(loadUserAuthorities(user.getUsername()));
+		}
+
+		if (getEnableGroups()) {
+			dbAuthsSet.addAll(loadGroupAuthorities(user.getUsername()));
+		}
+
+		List<GrantedAuthority> dbAuths = new ArrayList<GrantedAuthority>(dbAuthsSet);
+
+		addCustomAuthorities(user.getUsername(), dbAuths);
+
+		if (dbAuths.size() == 0) {
+			this.logger.debug("User '" + username + "' has no authorities and will be treated as 'not found'");
+
+			throw new UsernameNotFoundException(this.messages.getMessage("JdbcDaoImpl.noAuthority",
+					new Object[] { username }, "User {0} has no GrantedAuthority"));
+		}
+
+		return createUserDetails(username, user, dbAuths);
 	}
 
 	@Override
