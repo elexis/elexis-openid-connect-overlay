@@ -1,6 +1,4 @@
 # Elexis overlay for MITREid Connect
----
-
 
 This overlay creates a MITREid Connect web-application configured for usage
 with an Elexis database.
