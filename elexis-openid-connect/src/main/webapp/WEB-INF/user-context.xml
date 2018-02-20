@@ -21,12 +21,7 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
 
-	<bean id="propertyPlaceholderConfigurer"
-		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
-		<property name="searchSystemEnvironment" value="true" />
-	</bean>
-
+	<!-- ELEXIS -->
 	<bean id="elexisPasswordEncoder"
 		class="info.elexis.security.authentication.encoding.ElexisPasswordEncoder" />
 
@@ -41,6 +36,13 @@
 			<security:password-encoder ref="elexisPasswordEncoder" />
 		</security:authentication-provider>
 	</security:authentication-manager>
+	<!-- ELEXIS -->
+
+	<bean id="propertyPlaceholderConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+		<property name="searchSystemEnvironment" value="true" />
+	</bean>
 
 	<mvc:view-controller path="/login" view-name="login" />
 
