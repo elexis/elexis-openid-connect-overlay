@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
 import javax.xml.bind.JAXBException;
@@ -14,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanCreationException;
 
 import com.zaxxer.hikari.HikariDataSource;
+
+import info.elexis.ElexisServer;
 
 public class ElexisDataSource extends HikariDataSource {
 
@@ -26,8 +27,7 @@ public class ElexisDataSource extends HikariDataSource {
 	}
 
 	private void configureDataSource() throws BeanCreationException {
-		String userHomeProp = System.getProperty("user.home");
-		Path dbConnectionConfigPath = Paths.get(userHomeProp, "elexis-server", "elexis-connection.xml");
+		Path dbConnectionConfigPath = ElexisServer.getElexisServerHomeDirectory().resolve("elexis-connection.xml");
 		if (dbConnectionConfigPath.toFile().canRead()) {
 			try (InputStream is = Files.newInputStream(dbConnectionConfigPath, StandardOpenOption.READ)) {
 				DBConnection dbc = DBConnection.unmarshall(is);

@@ -48,6 +48,7 @@
 			https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/issues/1309
 		 -->
 		<oauth:password/> 
+		<!--  Elexis -->
 		<oauth:custom-grant token-granter-ref="chainedTokenGranter" />
 		<oauth:custom-grant token-granter-ref="jwtAssertionTokenGranter" />
 		<oauth:custom-grant token-granter-ref="deviceTokenGranter" />
