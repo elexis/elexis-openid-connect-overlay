@@ -10,6 +10,9 @@ The webapp requires the file `elexis-connection.xml` to exist in the user home's
 * Use the Elexis-Database configured via `elexis-connection.xml` as user repository.
 * Use H2 as OpenID Database, and persist the database to `~/elexis-server/openid`
 * Enable *Resource Owner Credentials* aka *password* flow
+* Programmatically initialize the OpenID database
+** Insert the required systems scopes
+** Add an introspection client for Elexis-Server
 
 ## Relevant links / discussions
 
