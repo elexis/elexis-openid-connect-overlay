@@ -6,11 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
-import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -26,8 +24,12 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class OpenIdForElexisServerInitializingBean implements InitializingBean {
 
+	// Use as system property to enable unit-test mode, registers unit-test client
+	public static final String OPENID_UNIT_TEST = "openid.unit-test";
+	public static final String ELEXIS_SERVER_UNITTEST_CLIENT = "es-unittest-client";
+	// --
+	
 	public static final String ELEXIS_SERVER_INTROSPECTION_CLIENT_ID = "es-introspection-client";
-
 	public static final String ESADMIN_SCOPE = "esadmin";
 	public static final String FHIR_SCOPE = "fhir";
 
@@ -41,6 +43,8 @@ public class OpenIdForElexisServerInitializingBean implements InitializingBean {
 
 	@Autowired
 	private SystemScopeService systemScopeService;
+
+	private ClientDetailsEntityBuilder clientDetailsEntityBuilder = new ClientDetailsEntityBuilder();
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -91,47 +95,8 @@ public class OpenIdForElexisServerInitializingBean implements InitializingBean {
 		if (esIntrospectionClient == null) {
 			log.warn("Adding elexis-server protected-resource introspection client.");
 
-			esIntrospectionClient = new ClientDetailsEntity();
-			esIntrospectionClient.setClientId(ELEXIS_SERVER_INTROSPECTION_CLIENT_ID);
+			esIntrospectionClient = clientDetailsEntityBuilder.buildIntrospectionClient();
 			esIntrospectionClient = clientService.generateClientSecret(esIntrospectionClient);
-			esIntrospectionClient.setTokenEndpointAuthMethod(AuthMethod.SECRET_BASIC);
-			esIntrospectionClient.setClientName("Elexis-Server Internal Client");
-			esIntrospectionClient.setClientDescription(
-					"Elexis-Server protected-resource introspection client. Required for elexis-server operation. Do not remove.");
-			esIntrospectionClient.setClientUri("http://www.elexis.info");
-			esIntrospectionClient.setSoftwareId("elexis-server");
-			esIntrospectionClient.setLogoUri("http://elexis.info/images/splash.png");
-
-			// no grant types are allowed
-			esIntrospectionClient.setGrantTypes(new HashSet<String>());
-			esIntrospectionClient.setResponseTypes(new HashSet<String>());
-			esIntrospectionClient.setRedirectUris(new HashSet<String>());
-
-			// don't issue tokens to this client
-			esIntrospectionClient.setAccessTokenValiditySeconds(0);
-			esIntrospectionClient.setIdTokenValiditySeconds(0);
-			esIntrospectionClient.setRefreshTokenValiditySeconds(0);
-
-			// clear out unused fields
-			esIntrospectionClient.setDefaultACRvalues(new HashSet<String>());
-			esIntrospectionClient.setDefaultMaxAge(null);
-			esIntrospectionClient.setIdTokenEncryptedResponseAlg(null);
-			esIntrospectionClient.setIdTokenEncryptedResponseEnc(null);
-			esIntrospectionClient.setIdTokenSignedResponseAlg(null);
-			esIntrospectionClient.setInitiateLoginUri(null);
-			esIntrospectionClient.setPostLogoutRedirectUris(null);
-			esIntrospectionClient.setRequestObjectSigningAlg(null);
-			esIntrospectionClient.setRequireAuthTime(null);
-			esIntrospectionClient.setReuseRefreshToken(false);
-			esIntrospectionClient.setSectorIdentifierUri(null);
-			esIntrospectionClient.setSubjectType(null);
-			esIntrospectionClient.setUserInfoEncryptedResponseAlg(null);
-			esIntrospectionClient.setUserInfoEncryptedResponseEnc(null);
-			esIntrospectionClient.setUserInfoSignedResponseAlg(null);
-
-			// this client has access to the introspection endpoint
-			esIntrospectionClient.setAllowIntrospection(true);
-			esIntrospectionClient.setDynamicallyRegistered(false);
 
 			esIntrospectionClient = clientService.saveNewClient(esIntrospectionClient);
 
@@ -147,15 +112,27 @@ public class OpenIdForElexisServerInitializingBean implements InitializingBean {
 		}
 	}
 
-	public static final String BOOLEAN_FLAG = "es.test";
-
 	public static boolean isTestMode() {
-		String testMode = System.getProperty(BOOLEAN_FLAG);
-		return Boolean.TRUE.toString().equalsIgnoreCase(testMode);
+		String testMode = System.getProperty(OPENID_UNIT_TEST);
+		return Boolean.TRUE.equals(Boolean.parseBoolean(testMode));
 	}
 
 	private void addOrRemoveUnitTestClients(boolean testMode) {
-		// TODO Auto-generated method stub
+		ClientDetailsEntity esUnitTestClient = clientRepository.getClientByClientId(ELEXIS_SERVER_UNITTEST_CLIENT);
+
+		if (testMode) {
+			if (esUnitTestClient == null) {
+				log.warn("Adding unit-test client [{}]", ELEXIS_SERVER_UNITTEST_CLIENT);
+				esUnitTestClient = clientDetailsEntityBuilder.buildUnitTestClient();
+				esUnitTestClient.setClientSecret(ELEXIS_SERVER_UNITTEST_CLIENT);
+				clientService.saveNewClient(esUnitTestClient);
+			}
+		} else {
+			if (esUnitTestClient != null) {
+				log.warn("Deleting unit-test client [{}]", ELEXIS_SERVER_UNITTEST_CLIENT);
+				clientService.deleteClient(esUnitTestClient);
+			}
+		}
 	}
 
 }
