@@ -13,6 +13,12 @@ The webapp requires the file `elexis-connection.xml` to exist in the user home's
 * Programmatically initialize the OpenID database
   * Insert the required systems scopes
   * Add an introspection client for Elexis-Server
+* On startup with `-Dopenid.unit-test=true` add a unit-test client supporting password grant type
+
+## TODO
+
+* Is the user allowed to request a specific scope? https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/issues/351
+* Remove unit-test-client on shutdown
 
 ## Relevant links / discussions
 
