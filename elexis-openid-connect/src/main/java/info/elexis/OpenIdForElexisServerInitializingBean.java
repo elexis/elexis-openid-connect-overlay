@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
@@ -65,7 +66,6 @@ public class OpenIdForElexisServerInitializingBean implements InitializingBean {
 		if (esadminScope == null) {
 			esadminScope = new SystemScope(ESADMIN_SCOPE);
 			esadminScope.setDefaultScope(false);
-			esadminScope.setRestricted(true);
 			esadminScope.setDescription("Elexis-Server Administration");
 			esadminScope.setIcon("star");
 			systemScopeService.save(esadminScope);
@@ -75,7 +75,6 @@ public class OpenIdForElexisServerInitializingBean implements InitializingBean {
 		if (fhirScope == null) {
 			fhirScope = new SystemScope(FHIR_SCOPE);
 			fhirScope.setDefaultScope(false);
-			fhirScope.setRestricted(true);
 			fhirScope.setDescription("FHIR Access");
 			fhirScope.setIcon("fire");
 			systemScopeService.save(fhirScope);
@@ -98,6 +97,10 @@ public class OpenIdForElexisServerInitializingBean implements InitializingBean {
 			esIntrospectionClient = clientDetailsEntityBuilder.buildIntrospectionClient();
 			esIntrospectionClient = clientService.generateClientSecret(esIntrospectionClient);
 
+			// https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/issues/889
+			// introspection only allowed for scopes that are granted to the introspection client
+			esIntrospectionClient.setScope(new HashSet<String>(Arrays.asList(ESADMIN_SCOPE,FHIR_SCOPE)));
+			
 			esIntrospectionClient = clientService.saveNewClient(esIntrospectionClient);
 
 			Path introspectionClientAuthPath = ElexisServer.getElexisServerHomeDirectory()
