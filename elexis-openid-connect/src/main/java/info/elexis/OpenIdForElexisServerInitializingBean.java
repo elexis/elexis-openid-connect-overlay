@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.SystemScope;
@@ -29,7 +31,7 @@ public class OpenIdForElexisServerInitializingBean implements InitializingBean {
 	public static final String OPENID_UNIT_TEST = "openid.unit-test";
 	public static final String ELEXIS_SERVER_UNITTEST_CLIENT = "es-unittest-client";
 	// --
-	
+
 	public static final String ELEXIS_SERVER_INTROSPECTION_CLIENT_ID = "es-introspection-client";
 	public static final String ESADMIN_SCOPE = "esadmin";
 	public static final String FHIR_SCOPE = "fhir";
@@ -98,9 +100,10 @@ public class OpenIdForElexisServerInitializingBean implements InitializingBean {
 			esIntrospectionClient = clientService.generateClientSecret(esIntrospectionClient);
 
 			// https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/issues/889
-			// introspection only allowed for scopes that are granted to the introspection client
-			esIntrospectionClient.setScope(new HashSet<String>(Arrays.asList(ESADMIN_SCOPE,FHIR_SCOPE)));
-			
+			// introspection only allowed for scopes that are granted to the introspection
+			// client
+			esIntrospectionClient.setScope(new HashSet<String>(Arrays.asList(ESADMIN_SCOPE, FHIR_SCOPE)));
+
 			esIntrospectionClient = clientService.saveNewClient(esIntrospectionClient);
 
 			Path introspectionClientAuthPath = ElexisServer.getElexisServerHomeDirectory()
@@ -111,6 +114,16 @@ public class OpenIdForElexisServerInitializingBean implements InitializingBean {
 				Files.write(introspectionClientAuthPath, lines, Charset.forName("UTF-8"));
 			} catch (IOException e) {
 				log.error("Error writing file [{}]", introspectionClientAuthPath, e);
+			}
+
+			if (Files.exists(introspectionClientAuthPath)) {
+				try {
+					Set<PosixFilePermission> perms = new HashSet<>();
+					perms.add(PosixFilePermission.OWNER_READ);
+					Files.setPosixFilePermissions(introspectionClientAuthPath, perms);
+				} catch (IOException e) {
+					log.warn("Could not reduce file permission [{}]", introspectionClientAuthPath, e);
+				}
 			}
 		}
 	}
