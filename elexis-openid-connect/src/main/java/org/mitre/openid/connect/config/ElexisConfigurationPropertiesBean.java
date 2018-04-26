@@ -16,12 +16,7 @@ public class ElexisConfigurationPropertiesBean extends ConfigurationPropertiesBe
 	private ContactRepository contactRepository;
 
 	private String installationTitleString = "Unknown main contact";
-
 	private String installationBodyString = "\nPlease set a mainContact in Elexis Database to see your info here.";
-
-	public ElexisConfigurationPropertiesBean() {
-
-	}
 
 	public String getInstallationTitleString() {
 		Contact mainContact = getMainContact();
