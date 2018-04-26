@@ -14,6 +14,7 @@ The webapp requires the file `elexis-connection.xml` to exist in the user home's
   * Insert the required systems scopes
   * Add an introspection client for Elexis-Server
 * On startup with `-Dopenid.unit-test=true` add a unit-test client supporting password grant type
+* Read the mainContact to show in the web-interface from the Elexis database
 
 ## TODO
 
