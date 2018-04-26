@@ -15,6 +15,7 @@ The webapp requires the file `elexis-connection.xml` to exist in the user home's
   * Add an introspection client for Elexis-Server
 * On startup with `-Dopenid.unit-test=true` add a unit-test client supporting password grant type
 * Read the mainContact to show in the web-interface from the Elexis database
+* Implement 2-factor-authentication using TOTP
 
 ## TODO
 
@@ -27,6 +28,7 @@ The webapp requires the file `elexis-connection.xml` to exist in the user home's
 * https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/issues/1309
 * https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/issues/1213
 * https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/issues/1220
+* http://www.baeldung.com/spring-security-two-factor-authentication-with-soft-token
 
 ## Building
 

@@ -31,13 +31,18 @@
 		class=" info.elexis.security.provisioning.ElexisJdbcUserDetailsManager">
 		<property name="dataSource" ref="dataSourceElexis" />
 	</bean>
+	
+	<bean id="authProvider" class="info.elexis.security.authentication.dao.OtpDaoAuthenticationProvider">
+		<property name="userDetailsService" ref="elexisUserDetailsManager" />
+		<property name="passwordEncoder" ref="elexisPasswordEncoder" />
+	</bean>
 
 	<security:authentication-manager id="authenticationManager">
-		<security:authentication-provider
-			user-service-ref="elexisUserDetailsManager">
-			<security:password-encoder ref="elexisPasswordEncoder" />
-		</security:authentication-provider>
+		<security:authentication-provider ref="authProvider" />
 	</security:authentication-manager>
+
+	<bean id="otpAuthenticationDetailsSource" class="info.elexis.security.authentication.OtpWebAuthenticationDetailsSource" />
+
 	<!-- ELEXIS -->
 
 	<bean id="propertyPlaceholderConfigurer"
@@ -45,7 +50,7 @@
 		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
 		<property name="searchSystemEnvironment" value="true" />
 	</bean>
-
+	
 	<mvc:view-controller path="/login" view-name="login" />
 
 	<security:http disable-url-rewriting="true"
@@ -55,9 +60,10 @@
 			access="hasRole('ROLE_USER')" />
 		<security:intercept-url pattern="/**" access="permitAll" />
 
-		<security:form-login login-page="/login"
+		<security:form-login login-page="/login" 
 			authentication-failure-url="/login?error=failure"
-			authentication-success-handler-ref="authenticationTimeStamper" />
+			authentication-success-handler-ref="authenticationTimeStamper" 
+			authentication-details-source-ref="otpAuthenticationDetailsSource" />
 		<security:custom-filter ref="authRequestFilter"
 			after="SECURITY_CONTEXT_FILTER" />
 		<security:logout logout-url="/logout" />
