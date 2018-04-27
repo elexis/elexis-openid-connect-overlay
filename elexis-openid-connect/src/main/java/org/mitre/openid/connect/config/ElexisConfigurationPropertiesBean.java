@@ -9,29 +9,24 @@ import info.elexis.repository.ContactRepository;
 
 public class ElexisConfigurationPropertiesBean extends ConfigurationPropertiesBean {
 
-	@Autowired
-	private ConfigRepository configRepository;
-
-	@Autowired
-	private ContactRepository contactRepository;
-
 	private String installationTitleString = "Unknown main contact";
 	private String installationBodyString = "\nPlease set a mainContact in Elexis Database to see your info here.";
 
-	public String getInstallationTitleString() {
-		Contact mainContact = getMainContact();
-		if (mainContact != null) {
-			return mainContact.getDescription1();
-		}
-		return installationTitleString;
-	}
-
-	private Contact getMainContact() {
+	@Autowired
+	public ElexisConfigurationPropertiesBean(ConfigRepository configRepository, ContactRepository contactRepository) {
 		Config mainContactId = configRepository.getByParam("mainContactId");
 		if (mainContactId != null) {
-			return contactRepository.getById(mainContactId.getWert());
+			Contact mainContact = contactRepository.getById(mainContactId.getWert());
+			if (mainContactId != null) {
+				setInstallationTitleString(mainContact.getDescription1());
+				setInstallationBodyString(
+						mainContact.getStreet() + ", " + mainContact.getZip() + " " + mainContact.getCity());
+			}
 		}
-		return null;
+	}
+
+	public String getInstallationTitleString() {
+		return installationTitleString;
 	}
 
 	public void setInstallationTitleString(String installationTitleString) {
@@ -39,10 +34,6 @@ public class ElexisConfigurationPropertiesBean extends ConfigurationPropertiesBe
 	}
 
 	public String getInstallationBodyString() {
-		Contact mainContact = getMainContact();
-		if (mainContact != null) {
-			return mainContact.getStreet() + ", " + mainContact.getZip() + " " + mainContact.getCity();
-		}
 		return installationBodyString;
 	}
 
