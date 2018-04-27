@@ -13,25 +13,33 @@ public class OtpDaoAuthenticationProvider extends DaoAuthenticationProvider {
 
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-		// one-time-password, currently a TOTP, but may also be a HOTP in the future
-		String otpToken = ((OtpWebAuthenticationDetails) authentication.getDetails()).getOtpToken();
 
-		// Determine username
-		String username = (authentication.getPrincipal() == null) ? "NONE_PROVIDED" : authentication.getName();
+		Object details = authentication.getDetails();
+		// is OtpWebAuthenticationDetails only when incoming via /login
+		// else LinkedHashMap
+		if (details instanceof OtpWebAuthenticationDetails) {
+			String otpToken = ((OtpWebAuthenticationDetails) authentication.getDetails()).getOtpToken();
 
-		OtpUser user = (OtpUser) getUserDetailsService().loadUserByUsername(username);
-		if (user == null) {
-			logger.debug("User '" + username + "' not found");
+			// Determine username
+			String username = (authentication.getPrincipal() == null) ? "NONE_PROVIDED" : authentication.getName();
 
-			throw new BadCredentialsException(
-					messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
+			OtpUser user = (OtpUser) getUserDetailsService().loadUserByUsername(username);
+			if (user == null) {
+				logger.debug("User '" + username + "' not found");
+
+				throw new BadCredentialsException(messages
+						.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
+			}
+
+			Totp totp = new Totp(user.getTotpSecret());
+			if (!isValidLong(otpToken) || !totp.verify(otpToken)) {
+				throw new BadCredentialsException(messages
+						.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
+			}
 		}
 
-		Totp totp = new Totp(user.getTotpSecret());
-		if (!isValidLong(otpToken) || !totp.verify(otpToken)) {
-			throw new BadCredentialsException(
-					messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
-		}
+		// TODO If no 2fa - Log this? Handle this otherwise?
+		// https://redmine.medelexis.ch/issues/11240
 
 		return super.authenticate(authentication);
 	}
