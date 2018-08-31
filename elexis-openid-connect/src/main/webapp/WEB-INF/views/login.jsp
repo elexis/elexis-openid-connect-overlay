@@ -17,8 +17,6 @@ $(document).ready(function() {
 <o:topbar />
 <div class="container-fluid main">
 
-	<h1><spring:message code="login.login_with_username_password_and_2fatoken"/></h1>
-
 	<c:if test="${ param.error != null }">
 		<div class="alert alert-error"><spring:message code="login.error"/></div>
 	</c:if>
@@ -26,6 +24,10 @@ $(document).ready(function() {
 
 	<div class="row-fluid">
 		<div class="span6 offset1 well">
+			<div>
+				<h1>${config.installationTitleString}</h1>
+				<p>${config.installationBodyString}</p>
+			</div>
 			<form action="${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }login" method="POST">
 				<div>
 					<div class="input-prepend input-block-level">

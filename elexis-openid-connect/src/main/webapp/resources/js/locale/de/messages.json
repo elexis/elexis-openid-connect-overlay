@@ -494,11 +494,11 @@
 	"login": {
 		"login_with_username_and_password": "Login with Username and Password",
 		"login_with_username_password_and_2fatoken": "Login with Username, Password and 2FA Token",
-		"username": "Username",
-		"password": "Password",
+		"username": "Benutzer",
+		"password": "Passwort",
 		"otptoken": "2FA Token",
-		"login-button": "Login",
-		"error": "The system was unable to log you in. Please try again."
+		"login-button": "Anmelden",
+		"error": "Sie konnten nicht angemeldet werden. Bitte versuchen Sie es erneut."
 	},
 	"device": {
 		"request_code": {
