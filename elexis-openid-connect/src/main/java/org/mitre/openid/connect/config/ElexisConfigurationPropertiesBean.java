@@ -1,5 +1,7 @@
 package org.mitre.openid.connect.config;
 
+
+import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import info.elexis.model.Config;
@@ -10,7 +12,7 @@ import info.elexis.repository.ContactRepository;
 public class ElexisConfigurationPropertiesBean extends ConfigurationPropertiesBean {
 
 	private String installationTitleString = "Unknown main contact";
-	private String installationBodyString = "\nPlease set a mainContact in Elexis Database to see your info here.";
+	private String installationBodyString = "Please set a mainContact in Elexis Database to see your info here.";
 
 	@Autowired
 	public ElexisConfigurationPropertiesBean(ConfigRepository configRepository, ContactRepository contactRepository) {
@@ -18,9 +20,8 @@ public class ElexisConfigurationPropertiesBean extends ConfigurationPropertiesBe
 		if (mainContactId != null) {
 			Contact mainContact = contactRepository.getById(mainContactId.getWert());
 			if (mainContactId != null) {
-				setInstallationTitleString(mainContact.getDescription1());
-				setInstallationBodyString(
-						mainContact.getStreet() + ", " + mainContact.getZip() + " " + mainContact.getCity());
+				setInstallationTitleString(StringEscapeUtils.escapeHtml4(mainContact.getDescription1()));
+				setInstallationBodyString(StringEscapeUtils.escapeHtml4(mainContact.getComment()));
 			}
 		}
 	}
