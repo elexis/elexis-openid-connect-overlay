@@ -1,5 +1,7 @@
 package org.mitre.openid.connect.config;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,17 @@ import info.elexis.repository.ConfigRepository;
 import info.elexis.repository.ContactRepository;
 
 public class ElexisConfigurationPropertiesBean extends ConfigurationPropertiesBean {
+
+	public static final String HOSTNAME;
+
+	static {
+		InetAddress myHost = null;
+		try {
+			myHost = InetAddress.getLocalHost();
+		} catch (UnknownHostException e) {
+		}
+		HOSTNAME = (myHost != null) ? myHost.getCanonicalHostName() : "localhost";
+	}
 
 	private String installationTitleString = "Unknown main contact";
 	private String installationBodyString = "Please set a mainContact in Elexis Database to see your info here.";
@@ -40,6 +53,11 @@ public class ElexisConfigurationPropertiesBean extends ConfigurationPropertiesBe
 
 	public void setInstallationBodyString(String installationBodyString) {
 		this.installationBodyString = installationBodyString;
+	}
+
+	@Override
+	public String getIssuer() {
+		return "https://" + HOSTNAME + "/openid";
 	}
 
 }
