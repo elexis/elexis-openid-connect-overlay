@@ -32,7 +32,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
 
 	<bean id="configBean" class="org.mitre.openid.connect.config.ElexisConfigurationPropertiesBean">
-		<property name="issuer" value="/openid/" />
+		<property name="issuer" value="https://es.localhost:8480/openid/" />
  		<property name="logoImageUrl" value="resources/images/openid_connect_small.png" />
  		<property name="topbarTitle" value="OpenID Connect for Elexis-Server" />
 	</bean>

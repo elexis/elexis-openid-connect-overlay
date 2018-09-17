@@ -16,6 +16,8 @@ The webapp requires the file `elexis-connection.xml` to exist in the user home's
 * On startup with `-Dopenid.unit-test=true` add a unit-test client supporting password grant type
 * Read the mainContact to show in the web-interface from the Elexis database
 * Implement 2-factor-authentication using TOTP
+* Hardcode base tag in header.tag to /openid/
+* Dynamic issuer resolution according to hostname
 
 ## TODO
 
