@@ -21,6 +21,7 @@ The webapp requires the file `elexis-connection.xml` to exist in the user home's
 
 ## TODO
 
+* Prevent totp brute-force attacks if password is known
 * Is the user allowed to request a specific scope? https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/issues/351
 * Remove unit-test-client on shutdown
 
