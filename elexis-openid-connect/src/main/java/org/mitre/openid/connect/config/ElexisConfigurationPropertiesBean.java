@@ -49,11 +49,16 @@ public class ElexisConfigurationPropertiesBean extends ConfigurationPropertiesBe
 		Config mainContactId = configRepository.getByParam("mainContactId");
 		if (mainContactId != null) {
 			Contact mainContact = contactRepository.getById(mainContactId.getWert());
-			if (mainContactId != null) {
+			if (mainContact != null) {
 				setInstallationTitleString(StringEscapeUtils.escapeHtml4(mainContact.getDescription1()));
 				setInstallationBodyString(StringEscapeUtils.escapeHtml4(mainContact.getComment()));
+			} else {
+				log.warn("mainContactId [{}] not resolvable", mainContactId.getWert());
 			}
+		} else {
+			log.warn("Could not find config entry [mainContactId]");
 		}
+
 	}
 
 	public String getInstallationTitleString() {

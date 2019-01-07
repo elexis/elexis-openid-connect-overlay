@@ -16,13 +16,6 @@ public class JpaContactRepositoryImpl implements ContactRepository {
 	@PersistenceContext(unitName = "elexisPersistenceUnit")
 	private EntityManager manager;
 
-	public JpaContactRepositoryImpl() {
-	}
-
-	public JpaContactRepositoryImpl(EntityManager manager) {
-		this.manager = manager;
-	}
-
 	@Override
 	public Contact getById(String id) {
 		return manager.find(Contact.class, id);

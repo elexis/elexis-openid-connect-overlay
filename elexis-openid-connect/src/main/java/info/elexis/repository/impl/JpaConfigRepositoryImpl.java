@@ -16,9 +16,6 @@ public class JpaConfigRepositoryImpl implements ConfigRepository {
 	@PersistenceContext(unitName = "elexisPersistenceUnit")
 	private EntityManager manager;
 
-	public JpaConfigRepositoryImpl() {
-	}
-
 	@Override
 	public Config getByParam(String param) {
 		return manager.find(Config.class, param);
