@@ -17,7 +17,7 @@ The webapp requires the file `elexis-connection.xml` to exist in the user home's
 * Read the mainContact to show in the web-interface from the Elexis database
 * Implement 2-factor-authentication using TOTP
 * Hardcode base tag in header.tag to /openid/
-* Dynamic issuer resolution according to hostname
+* Dynamic issuer resolution according to hostname (can be manually overriden with the `openid.issuer` parameter)
 
 ## TODO
 
