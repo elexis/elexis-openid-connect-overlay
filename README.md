@@ -1,6 +1,6 @@
 # Elexis overlay for MITREid Connect
 
-This overlay creates a MITREid Connect web-application configured for usage
+This overlay creates a [MITREid Connect web-application](https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server "MITREid Connect web-application")  configured for usage
 with an Elexis database.
 
 The webapp requires the file `elexis-connection.xml` to exist in the user home's `elexis-server` directory.
@@ -18,6 +18,7 @@ The webapp requires the file `elexis-connection.xml` to exist in the user home's
 * Implement 2-factor-authentication using TOTP
 * Hardcode base tag in header.tag to /openid/
 * Dynamic issuer resolution according to hostname (can be manually overriden with the `openid.issuer` parameter)
+* Ready for >= Java 11 (include missing JAXB libraries)
 
 ## TODO
 
