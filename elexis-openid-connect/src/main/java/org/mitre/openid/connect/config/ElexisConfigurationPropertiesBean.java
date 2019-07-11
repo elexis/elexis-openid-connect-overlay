@@ -22,21 +22,26 @@ public class ElexisConfigurationPropertiesBean extends ConfigurationPropertiesBe
 	static {
 		log = LoggerFactory.getLogger(ElexisConfigurationPropertiesBean.class);
 
-		String hostname = null;
+		String openidIssuerPort = System.getProperty("openid.issuer.port");
+		String _issuerPort = (openidIssuerPort != null) ? openidIssuerPort : "8480";
 
-		String issuer = System.getProperty("openid.issuer");
-		if (issuer == null) {
+		String openidIssuer = System.getProperty("openid.issuer");
+		String _issuer = null;
+
+		if (openidIssuer == null) {
 			try {
 				InetAddress myHost = InetAddress.getLocalHost();
-				hostname = myHost.getCanonicalHostName();
+				_issuer = "https://" + myHost.getCanonicalHostName() + ":" + _issuerPort + "/openid/";
 			} catch (UnknownHostException e) {
 			}
 		} else {
-			hostname = issuer;
+			_issuer = openidIssuer;
+			if(!_issuer.startsWith("http")) {
+				_issuer = "https://"+_issuer+":"+_issuerPort+"/openid/";
+			}
 		}
 
-		hostname = (hostname != null) ? hostname : "es.localhost";
-		ISSUER = "https://" + hostname + ":8480/openid/";
+		ISSUER = _issuer;
 
 		log.info("OpenId Issuer is {}", ISSUER);
 	}
