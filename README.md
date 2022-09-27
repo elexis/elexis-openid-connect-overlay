@@ -1,5 +1,7 @@
 # Elexis overlay for MITREid Connect
 
+NOTE: This solution is not used anymore. Elexis-Environment (EE) uses Keycloak as integrated service.
+
 This overlay creates a [MITREid Connect web-application](https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server "MITREid Connect web-application")  configured for usage
 with an Elexis database.
 
